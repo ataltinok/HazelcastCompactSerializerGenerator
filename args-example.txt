@@ -1,0 +1,6 @@
+generate
+# Paths to the roots of the projects containing your model and its dependencies. Smaller scope = Faster.
+# Example: C:/dev/personal-project C:/dev/other-personal-project
+--root=
+# FQN of the model as <package-name>.<model-name>, e.g. com.company.personal-project.models.MyModel
+--model=

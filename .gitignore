@@ -1,0 +1,15 @@
+# Build files
+target/
+
+# Generated outputs
+out/
+
+# IDE Related
+.settings/
+
+# Claude and Graperoot
+.claude/
+CLAUDE.md
+.dual-graph/
+
+args.txt

@@ -1,0 +1,42 @@
+package com.example.gen;
+
+import com.hazelcast.nio.serialization.compact.CompactReader;
+import com.hazelcast.nio.serialization.compact.CompactSerializer;
+import com.hazelcast.nio.serialization.compact.CompactWriter;
+
+import jakarta.validation.constraints.NotNull;
+
+public class SerializerEmitterFixtureSerializer implements CompactSerializer<SerializerEmitterFixture> {
+
+    private static final String FIELD_GPSI = "gpsi";
+    private static final String FIELD_SUPI = "supi";
+    private static final String FIELD_SIZE = "size";
+
+    @Override
+    public SerializerEmitterFixture read(@NotNull CompactReader reader) {
+        SerializerEmitterFixture obj = new SerializerEmitterFixture();
+        obj.setGpsi(reader.readString(FIELD_GPSI));
+        obj.setSupi(reader.readString(FIELD_SUPI));
+        obj.setSize(reader.readInt32(FIELD_SIZE));
+        return obj;
+    }
+
+    @Override
+    public void write(@NotNull CompactWriter writer, @NotNull SerializerEmitterFixture obj) {
+        writer.writeString(FIELD_GPSI, obj.getGpsi());
+        writer.writeString(FIELD_SUPI, obj.getSupi());
+        writer.writeInt32(FIELD_SIZE, obj.getSize());
+    }
+
+    @NotNull
+    @Override
+    public String getTypeName() {
+        return "SerializerEmitterFixture";
+    }
+
+    @NotNull
+    @Override
+    public Class<SerializerEmitterFixture> getCompactClass() {
+        return SerializerEmitterFixture.class;
+    }
+}

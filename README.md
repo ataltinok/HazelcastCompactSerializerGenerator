@@ -46,7 +46,7 @@ Outputs one `<ClassName>Serializer.java` per discovered class into `--out`.
 
 ## Run from IDE
 
-Fill in the arguments in `args.txt` as described above. Don't forget to put '=' after arguments' names.
+Duplicate `args-example.txt` as `args.txt` and fill in the arguments as described. Don't forget to put '=' after the argument names.
 
 Run the main method in `Application.java`.
 

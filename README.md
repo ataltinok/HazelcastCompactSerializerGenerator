@@ -35,7 +35,7 @@ java -jar target/compact-serializers.jar generate \
 
 | Flag | Required | Purpose |
 | ------ | ---------- | --------- |
-| `--root` | yes | Directory containing the Maven project(s). Scanned recursively for `pom.xml`. |
+| `--root` | yes | Directory containing the Maven project(s). Multiple roots supported (`--root A B`). Scanned recursively for `pom.xml`. |
 | `--model` | yes | Fully-qualified class name of the root model. |
 | `--out` | no | Output directory for generated `*Serializer.java` files. Defaults to `out/<ModelName>/serializer`. |
 | `--package` | no | Package declaration emitted into every file. Defaults to `TODO_PACKAGE`. |
@@ -86,13 +86,13 @@ Comment lines start with `#`. Blank lines are skipped.
 | `UUID` | `CompactSerializerUtil.readUUID` |
 | `Date` | `CompactSerializerUtil.readDate` |
 | `Instant` | `CompactSerializerUtil.readInstant` |
-| `List<E>` / `Set<E>` | `CompactSerializerUtil.readList` / `readSet` / `writeCollection` |
-| `Map<K,V>` | `CompactSerializerUtil.readMap` / `writeMap` |
-| `Map<K, List<V>>` | `readMapOfList` / `writeMapOfList` |
-| `Map<K, Date>` | `readMapOfDate` / `writeMapOfDate` |
-| `Map<UUID, V>` | `readUUIDMap` / `writeUUIDMap` |
-| `Map<String, Map<String, V>>` | `readMapOfMap` / `writeMapOfMap` |
-| `enum E` | `CompactSerializerUtil.readEnum(reader, KEY, E.class)` / `writeEnum` |
+| `List<E>` / `Set<E>` | `CompactSerializerUtil.readList` / `CompactSerializerUtil.readSet` / `CompactSerializerUtil.writeCollection` |
+| `Map<K,V>` | `CompactSerializerUtil.readMap` / `CompactSerializerUtil.writeMap` |
+| `Map<K, List<V>>` | `CompactSerializerUtil.readMapOfList` / `CompactSerializerUtil.writeMapOfList` |
+| `Map<K, Date>` | `CompactSerializerUtil.readMapOfDate` / `CompactSerializerUtil.writeMapOfDate` |
+| `Map<UUID, V>` | `CompactSerializerUtil.readUUIDMap` / `CompactSerializerUtil.writeUUIDMap` |
+| `Map<String, Map<String, V>>` | `CompactSerializerUtil.readMapOfMap` / `CompactSerializerUtil.writeMapOfMap` |
+| `enum E` | `CompactSerializerUtil.readEnum(reader, KEY, E.class)` / `CompactSerializerUtil.writeEnum` |
 | any other custom class | `reader.readCompact(KEY)` / `writer.writeCompact(KEY, v)` |
 | array of custom class | **TODO comment** — use `readArrayOfCompact` / `writeArrayOfCompact` manually |
 
@@ -107,8 +107,9 @@ Fixture fields live in `TypeMapperFixture.java`.
 
 - Field order follows `Class.getDeclaredFields()` — stable on Hotspot/OpenJDK but
   not guaranteed by the JLS.
-- Only `@jakarta.validation.Valid` triggers recursion (matches the Python tool).
-  Fields without `@Valid` are not followed even if their type is a custom class.
+- Recursion follows **all private non-static fields** whose type resolves to a
+  custom class (BFS). This can pull in more classes than expected if model classes
+  hold references to internal utility types.
 - Arrays of custom compact classes produce a `// TODO` comment rather than a
   ready-to-use call; handle those cases by hand.
 - The `mvn dependency:build-classpath` invocation blocks up to 10 minutes per
@@ -126,6 +127,6 @@ mvn test
 ```
 
 Covers: `NameHelpers`, `TypeClassifier`, `TypeMapper` (every mapping row),
-`SerializerEmitter` (golden-file compare), `PairsCsv` (round-trip),
+`SerializerEmitter` (golden-file compare),
 `ProjectLocator` (artifactId parse + ownership resolution), and
-`DependencyWalker` (BFS over `@Valid` fields on fixture classes).
+`DependencyWalker` (BFS over private non-static fields on fixture classes).

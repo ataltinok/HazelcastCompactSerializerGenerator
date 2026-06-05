@@ -1,4 +1,4 @@
-# Compact Serializers Generator
+# Compact Serializer Generator
 
 Reflection-based Java Hazelcast Compact Serializer generator.
 
